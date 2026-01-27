@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Registro - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card border-0 shadow-lg mt-4">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
+                    <h3 class="mt-3">Crear Cuenta</h3>
+                    <p class="text-muted">Completa el formulario para registrarte</p>
+                </div>
+                
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de Usuario *</label>
+                        <input type="text" name="username" class="form-control" 
+                               placeholder="Ej: jperez" required minlength="3">
+                        <small class="text-muted">Mínimo 3 caracteres</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nombre Completo *</label>
+                        <input type="text" name="nombre_completo" class="form-control" 
+                               placeholder="Ej: Juan Pérez García" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Correo Electrónico *</label>
+                        <input type="email" name="email" class="form-control" 
+                               placeholder="correo@ejemplo.com" required>
+                    </div>
+                    
+                    {% if current_user.is_authenticated and current_user.es_admin %}
+                    <div class="mb-3">
+                        <label class="form-label">Rol *</label>
+                        <select name="rol" class="form-select" required>
+                            {% for rol in roles %}
+                            <option value="{{ rol }}">{{ rol }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña *</label>
+                        <input type="password" name="password" class="form-control" 
+                               placeholder="Mínimo 6 caracteres" required minlength="6">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Confirmar Contraseña *</label>
+                        <input type="password" name="password2" class="form-control" 
+                               placeholder="Repite la contraseña" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="bi bi-person-plus me-2"></i>Crear Cuenta
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <p class="text-center text-muted mb-0">
+                    ¿Ya tienes cuenta? 
+                    <a href="{{ url_for('auth.login') }}">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

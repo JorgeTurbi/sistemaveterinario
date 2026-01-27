@@ -1,0 +1,134 @@
+---
+title: PetCare Pro - Diagrama Entidad-Relación v2.0
+---
+erDiagram
+    USUARIOS ||--o| VETERINARIOS : "tiene_cuenta"
+    USUARIOS ||--o{ CONSULTAS : "registra"
+    USUARIOS ||--o{ CALENDARIO_VACUNACION : "programa"
+    
+    PROPIETARIOS ||--o{ MASCOTAS : "posee"
+    ESPECIES ||--o{ MASCOTAS : "clasifica"
+    ESPECIES ||--o{ VACUNAS : "aplica_a"
+    
+    MASCOTAS ||--o{ CONSULTAS : "recibe"
+    MASCOTAS ||--o{ CALENDARIO_VACUNACION : "tiene"
+    
+    VETERINARIOS ||--o{ CONSULTAS : "atiende"
+    VETERINARIOS ||--o{ CALENDARIO_VACUNACION : "aplica"
+    
+    CONSULTAS ||--o{ TRATAMIENTOS : "genera"
+    VACUNAS ||--o{ CALENDARIO_VACUNACION : "programa"
+
+    USUARIOS {
+        int id_usuario PK
+        varchar username UK
+        varchar password_hash
+        varchar nombre_completo
+        varchar email UK
+        varchar rol
+        bit activo
+        datetime fecha_creacion
+        datetime ultimo_acceso
+    }
+
+    VETERINARIOS {
+        int id_veterinario PK
+        varchar nombre
+        varchar colegiatura UK
+        varchar especialidad
+        varchar telefono
+        varchar email
+        bit activo
+        int id_usuario FK "NUEVO - Relacion 1:1"
+    }
+
+    PROPIETARIOS {
+        int id_propietario PK
+        varchar nombre
+        varchar documento UK
+        varchar telefono
+        varchar email
+        varchar direccion
+        datetime fecha_registro
+        bit activo
+    }
+
+    ESPECIES {
+        int id_especie PK
+        varchar nombre UK
+        varchar descripcion
+        bit activo
+    }
+
+    MASCOTAS {
+        int id_mascota PK
+        int id_propietario FK
+        int id_especie FK
+        varchar nombre
+        varchar raza
+        date fecha_nacimiento
+        char sexo
+        decimal peso
+        varchar color
+        text observaciones
+        varchar foto_url
+        bit activo
+    }
+
+    CONSULTAS {
+        int id_consulta PK
+        int id_mascota FK
+        int id_veterinario FK
+        datetime fecha_hora
+        varchar motivo
+        text diagnostico
+        decimal peso_actual
+        decimal temperatura
+        varchar estado
+        text observaciones
+        decimal costo
+        datetime fecha_creacion
+        int id_usuario_registro FK "NUEVO - Trazabilidad"
+    }
+
+    TRATAMIENTOS {
+        int id_tratamiento PK
+        int id_consulta FK
+        varchar descripcion
+        varchar medicamento
+        varchar dosis
+        int duracion_dias
+        text indicaciones
+        decimal costo
+        date fecha_inicio
+        date fecha_fin
+        varchar estado
+    }
+
+    VACUNAS {
+        int id_vacuna PK
+        varchar nombre
+        varchar descripcion
+        int intervalo_dias
+        int id_especie FK
+        int dosis_requeridas
+        int edad_minima_dias
+        bit activo
+    }
+
+    CALENDARIO_VACUNACION {
+        int id_calendario PK
+        int id_mascota FK
+        int id_vacuna FK
+        date fecha_programada
+        date fecha_aplicacion
+        date fecha_proxima
+        int dosis_numero
+        varchar estado
+        bit recordatorio_enviado
+        varchar observaciones
+        varchar lote_vacuna
+        int id_veterinario FK
+        int id_usuario_registro FK "NUEVO - Trazabilidad"
+        datetime fecha_registro
+    }

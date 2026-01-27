@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Mascota - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Nueva Mascota</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('mascotas.create') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Propietario *</label>
+                            <select name="id_propietario" class="form-select" required>
+                                <option value="">Seleccione propietario...</option>
+                                {% for p in propietarios %}
+                                <option value="{{ p.id_propietario }}" 
+                                    {% if propietario_id == p.id_propietario %}selected{% endif %}>
+                                    {{ p.nombre }} - {{ p.documento }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Especie *</label>
+                            <select name="id_especie" class="form-select" required>
+                                <option value="">Seleccione especie...</option>
+                                {% for e in especies %}
+                                <option value="{{ e.id_especie }}">{{ e.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre *</label>
+                            <input type="text" name="nombre" class="form-control" required
+                                   placeholder="Nombre de la mascota">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Raza</label>
+                            <input type="text" name="raza" class="form-control"
+                                   placeholder="Ej: Labrador, Siamés">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" name="fecha_nacimiento" class="form-control">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Sexo</label>
+                            <select name="sexo" class="form-select">
+                                <option value="">No especificado</option>
+                                <option value="M">Macho</option>
+                                <option value="H">Hembra</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" name="peso" class="form-control" step="0.01" min="0"
+                                   placeholder="Ej: 5.5">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Color</label>
+                            <input type="text" name="color" class="form-control"
+                                   placeholder="Ej: Negro, Blanco con manchas">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Observaciones Médicas</label>
+                        <textarea name="observaciones" class="form-control" rows="3"
+                                  placeholder="Alergias, condiciones especiales, etc."></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('mascotas.index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i> Registrar Mascota
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

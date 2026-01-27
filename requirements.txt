@@ -1,0 +1,24 @@
+# ============================================
+# VetCare Pro - Dependencias del Proyecto
+# ============================================
+# Instalar con: pip install -r requirements.txt
+
+# Framework Web
+flask==3.0.0
+
+# ORM y Base de Datos
+flask-sqlalchemy==3.1.1
+sqlalchemy==2.0.23
+pyodbc==5.0.1
+
+# Autenticación y Sesiones
+flask-login==0.6.3
+werkzeug==3.0.1
+
+# Formularios y Validación
+flask-wtf==1.2.1
+wtforms==3.1.1
+email-validator==2.1.0
+
+# Utilidades
+python-dotenv==1.0.0

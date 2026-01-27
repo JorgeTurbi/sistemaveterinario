@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Bienvenido - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center min-vh-75 align-items-center">
+    <div class="col-lg-8 text-center">
+        <div class="mb-5">
+            <i class="bi bi-heart-pulse-fill text-primary" style="font-size: 5rem;"></i>
+        </div>
+        <h1 class="display-4 fw-bold text-primary mb-3">{{ app_name }}</h1>
+        <p class="lead text-muted mb-5">
+            Sistema integral de gestión para clínicas veterinarias.<br>
+            Administra pacientes, consultas, tratamientos y vacunación en un solo lugar.
+        </p>
+        
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary btn-lg px-5">
+                <i class="bi bi-person-plus me-2"></i>Registrarse
+            </a>
+        </div>
+        
+        <div class="row mt-5 pt-5">
+            <div class="col-md-3 mb-4">
+                <div class="text-primary mb-2">
+                    <i class="bi bi-people" style="font-size: 2rem;"></i>
+                </div>
+                <h6>Gestión de Clientes</h6>
+                <small class="text-muted">Propietarios y mascotas</small>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="text-primary mb-2">
+                    <i class="bi bi-calendar-check" style="font-size: 2rem;"></i>
+                </div>
+                <h6>Agenda de Citas</h6>
+                <small class="text-muted">Programación y seguimiento</small>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="text-primary mb-2">
+                    <i class="bi bi-shield-plus" style="font-size: 2rem;"></i>
+                </div>
+                <h6>Vacunación</h6>
+                <small class="text-muted">Calendario y recordatorios</small>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="text-primary mb-2">
+                    <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
+                </div>
+                <h6>Reportes</h6>
+                <small class="text-muted">Estadísticas y análisis</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
+    <span class="text-muted">Bienvenido, {{ current_user.nombre_completo }}</span>
+</div>
+
+<!-- Tarjetas de Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100 bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">Mascotas</h6>
+                        <h2 class="mb-0">{{ stats.total_mascotas }}</h2>
+                    </div>
+                    <i class="bi bi-github" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('mascotas.index') }}" class="text-white text-decoration-none small">
+                    Ver todas <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100 bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">Propietarios</h6>
+                        <h2 class="mb-0">{{ stats.total_propietarios }}</h2>
+                    </div>
+                    <i class="bi bi-people" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('propietarios.index') }}" class="text-white text-decoration-none small">
+                    Ver todos <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100 bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">Citas Hoy</h6>
+                        <h2 class="mb-0">{{ stats.consultas_hoy }}</h2>
+                    </div>
+                    <i class="bi bi-calendar-check" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('consultas.hoy') }}" class="text-white text-decoration-none small">
+                    Ver citas <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100 bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-dark mb-1" style="opacity: 0.7;">Vacunas Próximas</h6>
+                        <h2 class="mb-0">{{ stats.vacunas_pendientes }}</h2>
+                    </div>
+                    <i class="bi bi-shield-plus" style="font-size: 2.5rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('vacunacion.index') }}" class="text-dark text-decoration-none small">
+                    Ver calendario <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Citas de Hoy -->
+    <div class="col-lg-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-day text-primary me-2"></i>Citas de Hoy
+                </h5>
+                <a href="{{ url_for('consultas.create') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> Nueva
+                </a>
+            </div>
+            <div class="card-body">
+                {% if consultas_hoy %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hora</th>
+                                <th>Mascota</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for consulta in consultas_hoy %}
+                            <tr>
+                                <td>{{ consulta.fecha_hora.strftime('%H:%M') }}</td>
+                                <td>
+                                    <a href="{{ url_for('mascotas.show', id=consulta.id_mascota) }}">
+                                        {{ consulta.mascota.nombre }}
+                                    </a>
+                                </td>
+                                <td class="text-truncate" style="max-width: 150px;">{{ consulta.motivo }}</td>
+                                <td>
+                                    <span class="badge bg-{{ consulta.estado_color }}">
+                                        {{ consulta.estado }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                    <p class="mb-0 mt-2">No hay citas programadas para hoy</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Vacunaciones Próximas -->
+    <div class="col-lg-6 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-exclamation text-warning me-2"></i>Vacunas Próximas (7 días)
+                </h5>
+                <a href="{{ url_for('vacunacion.programar') }}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-plus"></i> Programar
+                </a>
+            </div>
+            <div class="card-body">
+                {% if proximas_vacunas %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Mascota</th>
+                                <th>Vacuna</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vac in proximas_vacunas %}
+                            <tr>
+                                <td>{{ vac.fecha_programada.strftime('%d/%m') }}</td>
+                                <td>{{ vac.mascota.nombre }}</td>
+                                <td>{{ vac.vacuna.nombre }}</td>
+                                <td>
+                                    <a href="{{ url_for('vacunacion.aplicar', id=vac.id_calendario) }}" 
+                                       class="btn btn-sm btn-outline-success">
+                                        Aplicar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-shield-check" style="font-size: 2rem;"></i>
+                    <p class="mb-0 mt-2">No hay vacunas pendientes esta semana</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertas de Vacunas Vencidas -->
+{% if vacunas_vencidas %}
+<div class="card border-danger mb-4">
+    <div class="card-header bg-danger text-white">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>¡Atención!</strong> Vacunas Vencidas ({{ vacunas_vencidas|length }})
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th>Mascota</th>
+                        <th>Propietario</th>
+                        <th>Vacuna</th>
+                        <th>Fecha Programada</th>
+                        <th>Días Vencida</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vac in vacunas_vencidas[:5] %}
+                    <tr>
+                        <td>{{ vac.mascota.nombre }}</td>
+                        <td>{{ vac.mascota.propietario.nombre }}</td>
+                        <td>{{ vac.vacuna.nombre }}</td>
+                        <td>{{ vac.fecha_programada.strftime('%d/%m/%Y') }}</td>
+                        <td><span class="text-danger">{{ -vac.dias_para_vencer }} días</span></td>
+                        <td>
+                            <a href="{{ url_for('vacunacion.aplicar', id=vac.id_calendario) }}" 
+                               class="btn btn-sm btn-danger">
+                                Aplicar Ahora
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Accesos Rápidos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0"><i class="bi bi-lightning text-warning me-2"></i>Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('propietarios.create') }}" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-person-plus d-block mb-1" style="font-size: 1.5rem;"></i>
+                            Nuevo Propietario
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('mascotas.create') }}" class="btn btn-outline-success w-100 py-3">
+                            <i class="bi bi-plus-circle d-block mb-1" style="font-size: 1.5rem;"></i>
+                            Nueva Mascota
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('consultas.create') }}" class="btn btn-outline-info w-100 py-3">
+                            <i class="bi bi-calendar-plus d-block mb-1" style="font-size: 1.5rem;"></i>
+                            Programar Cita
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{ url_for('vacunacion.programar') }}" class="btn btn-outline-warning w-100 py-3">
+                            <i class="bi bi-shield-plus d-block mb-1" style="font-size: 1.5rem;"></i>
+                            Programar Vacuna
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

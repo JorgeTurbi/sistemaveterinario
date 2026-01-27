@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Mascotas - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-github me-2"></i>Mascotas</h2>
+    <a href="{{ url_for('mascotas.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nueva Mascota
+    </a>
+</div>
+
+<!-- Filtros -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" class="form-control" 
+                           placeholder="Buscar por nombre..." value="{{ busqueda }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="especie" class="form-select">
+                    <option value="">Todas las especies</option>
+                    {% for e in especies %}
+                    <option value="{{ e.id_especie }}" {% if especie_id == e.id_especie %}selected{% endif %}>
+                        {{ e.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        {% if mascotas %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mascota</th>
+                        <th>Especie</th>
+                        <th>Propietario</th>
+                        <th>Edad</th>
+                        <th>Sexo</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in mascotas %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                     style="width: 40px; height: 40px;">
+                                    <i class="bi bi-github text-success"></i>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('mascotas.show', id=m.id_mascota) }}" class="fw-bold text-decoration-none">
+                                        {{ m.nombre }}
+                                    </a>
+                                    <br><small class="text-muted">{{ m.raza or 'Sin raza' }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-info">{{ m.especie.nombre }}</span></td>
+                        <td>
+                            <a href="{{ url_for('propietarios.show', id=m.id_propietario) }}">
+                                {{ m.propietario.nombre }}
+                            </a>
+                        </td>
+                        <td>{{ m.edad_texto }}</td>
+                        <td>{{ m.sexo_texto }}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('mascotas.show', id=m.id_mascota) }}" 
+                                   class="btn btn-outline-primary" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('consultas.create', mascota=m.id_mascota) }}" 
+                                   class="btn btn-outline-info" title="Nueva Cita">
+                                    <i class="bi bi-calendar-plus"></i>
+                                </a>
+                                <a href="{{ url_for('mascotas.edit', id=m.id_mascota) }}" 
+                                   class="btn btn-outline-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-github text-muted" style="font-size: 4rem;"></i>
+            <h5 class="mt-3 text-muted">No se encontraron mascotas</h5>
+            <a href="{{ url_for('mascotas.create') }}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle me-1"></i> Registrar Primera Mascota
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

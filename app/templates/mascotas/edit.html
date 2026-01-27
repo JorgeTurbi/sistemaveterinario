@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Editar {{ mascota.nombre }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Editar Mascota</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Propietario *</label>
+                            <select name="id_propietario" class="form-select" required>
+                                {% for p in propietarios %}
+                                <option value="{{ p.id_propietario }}" 
+                                    {% if mascota.id_propietario == p.id_propietario %}selected{% endif %}>
+                                    {{ p.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Especie *</label>
+                            <select name="id_especie" class="form-select" required>
+                                {% for e in especies %}
+                                <option value="{{ e.id_especie }}"
+                                    {% if mascota.id_especie == e.id_especie %}selected{% endif %}>
+                                    {{ e.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre *</label>
+                            <input type="text" name="nombre" class="form-control" required
+                                   value="{{ mascota.nombre }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Raza</label>
+                            <input type="text" name="raza" class="form-control"
+                                   value="{{ mascota.raza or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" name="fecha_nacimiento" class="form-control"
+                                   value="{{ mascota.fecha_nacimiento.strftime('%Y-%m-%d') if mascota.fecha_nacimiento else '' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Sexo</label>
+                            <select name="sexo" class="form-select">
+                                <option value="">No especificado</option>
+                                <option value="M" {% if mascota.sexo == 'M' %}selected{% endif %}>Macho</option>
+                                <option value="H" {% if mascota.sexo == 'H' %}selected{% endif %}>Hembra</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" name="peso" class="form-control" step="0.01"
+                                   value="{{ mascota.peso or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <input type="text" name="color" class="form-control"
+                               value="{{ mascota.color or '' }}">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="3">{{ mascota.observaciones or '' }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('mascotas.show', id=mascota.id_mascota) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
