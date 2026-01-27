@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Consultas por Periodo - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-calendar-check me-2"></i>Consultas por Periodo</h2>
+    <a href="{{ url_for('reportes.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Volver
+    </a>
+</div>
+
+<!-- Filtros -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Fecha Inicio</label>
+                <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Fecha Fin</label>
+                <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Resumen -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card-body text-center">
+                <h3 class="mb-0">{{ total }}</h3>
+                <small>Total Consultas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body text-center">
+                <h3 class="mb-0">{{ completadas }}</h3>
+                <small>Completadas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-danger text-white">
+            <div class="card-body text-center">
+                <h3 class="mb-0">{{ canceladas }}</h3>
+                <small>Canceladas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card-body text-center">
+                <h3 class="mb-0">S/ {{ "%.2f"|format(ingresos) }}</h3>
+                <small>Ingresos</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header">
+        <h6 class="mb-0">Detalle de Consultas</h6>
+    </div>
+    <div class="card-body">
+        {% if consultas %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Mascota</th>
+                        <th>Veterinario</th>
+                        <th>Motivo</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-end">Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in consultas %}
+                    <tr>
+                        <td>{{ c.fecha_formateada }}</td>
+                        <td>{{ c.mascota.nombre if c.mascota else 'N/A' }}</td>
+                        <td>{{ c.veterinario.nombre if c.veterinario else 'N/A' }}</td>
+                        <td>{{ c.motivo[:30] }}{% if c.motivo|length > 30 %}...{% endif %}</td>
+                        <td class="text-center">
+                            <span class="badge bg-{{ c.estado_color }}">{{ c.estado }}</span>
+                        </td>
+                        <td class="text-end">{% if c.costo %}S/ {{ "%.2f"|format(c.costo) }}{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4 text-muted">
+            <p class="mb-0">No hay consultas en el periodo seleccionado</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Consultas - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-calendar-check me-2"></i>Consultas</h2>
+    <a href="{{ url_for('consultas.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nueva Consulta
+    </a>
+</div>
+
+<!-- Filtros -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-select">
+                    <option value="">Todos los estados</option>
+                    {% for est in estados %}
+                    <option value="{{ est }}" {% if estado_filtro == est %}selected{% endif %}>
+                        {{ est }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="fecha" class="form-control" value="{{ fecha_filtro }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+                <a href="{{ url_for('consultas.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de consultas -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        {% if consultas %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha/Hora</th>
+                        <th>Mascota</th>
+                        <th>Propietario</th>
+                        <th>Veterinario</th>
+                        <th>Motivo</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in consultas %}
+                    <tr>
+                        <td>
+                            <strong>{{ c.fecha_formateada }}</strong>
+                        </td>
+                        <td>
+                            {% if c.mascota %}
+                            <a href="{{ url_for('mascotas.show', id=c.mascota.id_mascota) }}" class="text-decoration-none">
+                                {{ c.mascota.nombre }}
+                            </a>
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if c.mascota and c.mascota.propietario %}
+                            {{ c.mascota.propietario.nombre }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if c.veterinario %}
+                            Dr. {{ c.veterinario.nombre }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span title="{{ c.motivo }}">
+                                {{ c.motivo[:30] }}{% if c.motivo|length > 30 %}...{% endif %}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-{{ c.estado_color }}">{{ c.estado }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('consultas.show', id=c.id_consulta) }}"
+                                   class="btn btn-outline-primary" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if c.estado == 'Programada' %}
+                                <a href="{{ url_for('consultas.atender', id=c.id_consulta) }}"
+                                   class="btn btn-outline-success" title="Atender">
+                                    <i class="bi bi-clipboard-pulse"></i>
+                                </a>
+                                {% endif %}
+                                {% if c.estado == 'Completada' and not c.factura %}
+                                <a href="{{ url_for('facturacion.desde_consulta', id_consulta=c.id_consulta) }}"
+                                   class="btn btn-outline-warning" title="Facturar">
+                                    <i class="bi bi-receipt"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3 text-muted">
+            <small>Mostrando {{ consultas|length }} consulta(s)</small>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+            <h5 class="mt-3 text-muted">No se encontraron consultas</h5>
+            {% if estado_filtro or fecha_filtro %}
+            <p class="text-muted">No hay resultados para los filtros aplicados</p>
+            <a href="{{ url_for('consultas.index') }}" class="btn btn-outline-secondary">
+                Ver todas
+            </a>
+            {% else %}
+            <p class="text-muted">Comienza programando la primera consulta</p>
+            <a href="{{ url_for('consultas.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Nueva Consulta
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

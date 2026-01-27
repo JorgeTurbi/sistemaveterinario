@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura {{ factura.numero_factura }} - VetCare Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2196F3;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .factura-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .factura-info .numero {
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .factura-info .numero h2 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .factura-info .numero p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .factura-info .fecha {
+            text-align: right;
+        }
+
+        .factura-info .estado {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .estado-Pendiente { background: #FFC107; color: #000; }
+        .estado-Pagada { background: #4CAF50; color: #fff; }
+        .estado-Parcial { background: #2196F3; color: #fff; }
+        .estado-Anulada { background: #F44336; color: #fff; }
+
+        .cliente-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .cliente-info h3 {
+            color: #2196F3;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .cliente-info p {
+            margin-bottom: 3px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th {
+            background: #2196F3;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        th:last-child {
+            text-align: right;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        td:last-child {
+            text-align: right;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .totales {
+            margin-left: auto;
+            width: 300px;
+        }
+
+        .totales table {
+            margin-bottom: 0;
+        }
+
+        .totales td {
+            border-bottom: none;
+            padding: 5px 10px;
+        }
+
+        .totales .total-final {
+            background: #2196F3;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .totales .total-final td {
+            padding: 10px;
+        }
+
+        .observaciones {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .observaciones h4 {
+            font-size: 11px;
+            margin-bottom: 5px;
+            color: #856404;
+        }
+
+        .footer {
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 30px;
+            color: #666;
+            font-size: 10px;
+        }
+
+        .no-print {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn-print {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .btn-print:hover {
+            background: #1976D2;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button class="btn-print" onclick="window.print()">
+            Imprimir Factura
+        </button>
+    </div>
+
+    <div class="header">
+        <h1>VetCare Pro</h1>
+        <p>Sistema de Gestion Veterinaria</p>
+        <p>Direccion de la Clinica | Telefono: (01) 234-5678</p>
+    </div>
+
+    <div class="factura-info">
+        <div class="numero">
+            <h2>FACTURA</h2>
+            <p>{{ factura.numero_factura }}</p>
+        </div>
+        <div class="fecha">
+            <p><strong>Fecha de emision:</strong> {{ factura.fecha_formateada }}</p>
+            {% if factura.fecha_vencimiento %}
+            <p><strong>Fecha de vencimiento:</strong> {{ factura.fecha_vencimiento.strftime('%d/%m/%Y') }}</p>
+            {% endif %}
+            <span class="estado estado-{{ factura.estado.replace(' ', '') }}">{{ factura.estado }}</span>
+        </div>
+    </div>
+
+    <div class="cliente-info">
+        <h3>Datos del Cliente</h3>
+        {% if factura.propietario %}
+        <p><strong>Nombre:</strong> {{ factura.propietario.nombre }}</p>
+        <p><strong>Documento:</strong> {{ factura.propietario.documento }}</p>
+        <p><strong>Telefono:</strong> {{ factura.propietario.telefono }}</p>
+        {% if factura.propietario.email %}
+        <p><strong>Email:</strong> {{ factura.propietario.email }}</p>
+        {% endif %}
+        {% if factura.propietario.direccion %}
+        <p><strong>Direccion:</strong> {{ factura.propietario.direccion }}</p>
+        {% endif %}
+        {% endif %}
+        {% if factura.mascota %}
+        <p><strong>Mascota:</strong> {{ factura.mascota.nombre }} ({{ factura.mascota.especie.nombre if factura.mascota.especie else 'N/A' }})</p>
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%">Descripcion</th>
+                <th style="width: 10%" class="text-right">Cant.</th>
+                <th style="width: 15%" class="text-right">P. Unit.</th>
+                <th style="width: 10%" class="text-right">Desc.</th>
+                <th style="width: 15%" class="text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in detalles %}
+            <tr>
+                <td>
+                    {{ d.descripcion }}
+                    {% if d.servicio %}
+                    <br><small style="color: #666;">Cod: {{ d.servicio.codigo }}</small>
+                    {% endif %}
+                </td>
+                <td class="text-right">{{ d.cantidad }}</td>
+                <td class="text-right">S/ {{ "%.2f"|format(d.precio_unitario or 0) }}</td>
+                <td class="text-right">
+                    {% if d.descuento and d.descuento > 0 %}
+                    S/ {{ "%.2f"|format(d.descuento) }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td class="text-right">S/ {{ "%.2f"|format(d.subtotal or 0) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totales">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td>S/ {{ "%.2f"|format(factura.subtotal or 0) }}</td>
+            </tr>
+            {% if factura.descuento and factura.descuento > 0 %}
+            <tr>
+                <td>Descuento:</td>
+                <td>-S/ {{ "%.2f"|format(factura.descuento) }}</td>
+            </tr>
+            {% endif %}
+            {% if factura.igv and factura.igv > 0 %}
+            <tr>
+                <td>IGV (18%):</td>
+                <td>S/ {{ "%.2f"|format(factura.igv) }}</td>
+            </tr>
+            {% endif %}
+            <tr class="total-final">
+                <td>TOTAL:</td>
+                <td>S/ {{ "%.2f"|format(factura.total or 0) }}</td>
+            </tr>
+            {% if factura.monto_pagado and factura.monto_pagado > 0 %}
+            <tr>
+                <td>Pagado:</td>
+                <td>S/ {{ "%.2f"|format(factura.monto_pagado) }}</td>
+            </tr>
+            {% if factura.saldo_pendiente > 0 %}
+            <tr>
+                <td><strong>Saldo:</strong></td>
+                <td><strong>S/ {{ "%.2f"|format(factura.saldo_pendiente) }}</strong></td>
+            </tr>
+            {% endif %}
+            {% endif %}
+        </table>
+    </div>
+
+    {% if factura.observaciones %}
+    <div class="observaciones">
+        <h4>Observaciones:</h4>
+        <p>{{ factura.observaciones }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Gracias por su preferencia</p>
+        <p>Este documento fue generado por VetCare Pro - Sistema de Gestion Veterinaria</p>
+        {% if factura.usuario_registro %}
+        <p>Atendido por: {{ factura.usuario_registro.nombre_completo }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

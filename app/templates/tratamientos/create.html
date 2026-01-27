@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Tratamiento - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-capsule me-2"></i>Nuevo Tratamiento</h5>
+            </div>
+            <div class="card-body p-4">
+                <!-- Info de la consulta -->
+                <div class="alert alert-info mb-4">
+                    <strong>Consulta #{{ consulta.id_consulta }}</strong><br>
+                    Mascota: {{ consulta.mascota.nombre if consulta.mascota else 'N/A' }} |
+                    Fecha: {{ consulta.fecha_formateada }}
+                </div>
+
+                <form method="POST" action="{{ url_for('tratamientos.create', consulta_id=consulta.id_consulta) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Descripcion del Tratamiento *</label>
+                        <textarea name="descripcion" class="form-control" rows="2" required
+                                  placeholder="Describa el tratamiento..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Medicamento</label>
+                            <input type="text" name="medicamento" class="form-control"
+                                   placeholder="Nombre del medicamento">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Dosis</label>
+                            <input type="text" name="dosis" class="form-control"
+                                   placeholder="Ej: 1 tableta cada 8 horas">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Duracion (dias)</label>
+                            <input type="number" name="duracion_dias" class="form-control"
+                                   min="1" value="7">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Costo (S/)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">S/</span>
+                                <input type="number" name="costo" class="form-control"
+                                       step="0.01" min="0" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Indicaciones</label>
+                        <textarea name="indicaciones" class="form-control" rows="3"
+                                  placeholder="Instrucciones especiales para el propietario..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('consultas.show', id=consulta.id_consulta) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i> Guardar Tratamiento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

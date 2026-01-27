@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Servicios - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-tags me-2"></i>Servicios y Precios</h2>
+    <a href="{{ url_for('servicios.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nuevo Servicio
+    </a>
+</div>
+
+<!-- Filtros -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" class="form-control"
+                           placeholder="Buscar por codigo, nombre..."
+                           value="{{ busqueda }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="categoria" class="form-select">
+                    <option value="">Todas las categorias</option>
+                    {% for cat in categorias %}
+                    <option value="{{ cat }}" {% if categoria_filtro == cat %}selected{% endif %}>
+                        {{ cat }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        {% if servicios %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Categoria</th>
+                        <th class="text-end">Precio</th>
+                        <th class="text-center">Duracion</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in servicios %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary">{{ s.codigo }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ s.nombre }}</strong>
+                            {% if s.descripcion %}
+                            <br><small class="text-muted">{{ s.descripcion[:50] }}{% if s.descripcion|length > 50 %}...{% endif %}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ s.categoria }}</span>
+                        </td>
+                        <td class="text-end">
+                            <strong class="text-success">{{ s.precio_formateado }}</strong>
+                        </td>
+                        <td class="text-center">
+                            {% if s.duracion_minutos %}
+                            <span class="badge bg-light text-dark">{{ s.duracion_minutos }} min</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('servicios.edit', id=s.id_servicio) }}"
+                                   class="btn btn-outline-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('servicios.delete', id=s.id_servicio) }}"
+                                      method="POST" class="d-inline"
+                                      onsubmit="return confirm('Eliminar este servicio?')">
+                                    <button type="submit" class="btn btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Resumen -->
+        <div class="mt-3 text-muted">
+            <small>{{ servicios|length }} servicio(s) encontrado(s)</small>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-tags text-muted" style="font-size: 4rem;"></i>
+            <h5 class="mt-3 text-muted">No se encontraron servicios</h5>
+            {% if busqueda or categoria_filtro %}
+            <p class="text-muted">No hay resultados para los filtros aplicados</p>
+            <a href="{{ url_for('servicios.index') }}" class="btn btn-outline-secondary">
+                Ver todos
+            </a>
+            {% else %}
+            <p class="text-muted">Comienza registrando el primer servicio</p>
+            <a href="{{ url_for('servicios.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Nuevo Servicio
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

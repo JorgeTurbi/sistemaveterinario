@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Dr. {{ veterinario.nombre }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="bi bi-person-badge me-2"></i>Informacion del Veterinario</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-person-circle text-primary" style="font-size: 5rem;"></i>
+                </div>
+                <h4>Dr. {{ veterinario.nombre }}</h4>
+                <span class="badge bg-secondary fs-6 mb-2">{{ veterinario.colegiatura }}</span>
+                <p class="text-muted mb-2">{{ veterinario.especialidad or 'Medicina General' }}</p>
+
+                {% if veterinario.activo %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+
+                <hr>
+
+                {% if veterinario.telefono %}
+                <p class="mb-1"><i class="bi bi-telephone me-2"></i>{{ veterinario.telefono }}</p>
+                {% endif %}
+                {% if veterinario.email %}
+                <p class="mb-0"><i class="bi bi-envelope me-2"></i>{{ veterinario.email }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('veterinarios.edit', id=veterinario.id_veterinario) }}" class="btn btn-warning">
+                        <i class="bi bi-pencil me-1"></i> Editar
+                    </a>
+                    <a href="{{ url_for('veterinarios.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Ultimas Consultas</h6>
+            </div>
+            <div class="card-body">
+                {% if consultas %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Mascota</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in consultas %}
+                            <tr>
+                                <td>{{ c.fecha_formateada }}</td>
+                                <td>
+                                    <a href="{{ url_for('mascotas.show', id=c.mascota.id_mascota) }}" class="text-decoration-none">
+                                        {{ c.mascota.nombre if c.mascota else 'N/A' }}
+                                    </a>
+                                </td>
+                                <td>{{ c.motivo[:30] }}{% if c.motivo|length > 30 %}...{% endif %}</td>
+                                <td><span class="badge bg-{{ c.estado_color }}">{{ c.estado }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+                    <p class="mt-2 mb-0">No hay consultas recientes</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

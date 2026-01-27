@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Factura - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Nueva Factura</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('facturacion.create') }}">
+                    <!-- Cliente -->
+                    <div class="mb-4">
+                        <label class="form-label">Cliente/Propietario *</label>
+                        <select name="id_propietario" id="selectPropietario" class="form-select" required>
+                            <option value="">Seleccione un cliente...</option>
+                            {% for p in propietarios %}
+                            <option value="{{ p.id_propietario }}">
+                                {{ p.nombre }} - {{ p.documento }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Mascota (se carga dinamicamente) -->
+                    <div class="mb-4">
+                        <label class="form-label">Mascota (opcional)</label>
+                        <select name="id_mascota" id="selectMascota" class="form-select">
+                            <option value="">Seleccione primero un cliente...</option>
+                        </select>
+                        <small class="text-muted">La mascota se puede asociar a la factura</small>
+                    </div>
+
+                    <!-- Consulta asociada -->
+                    <div class="mb-4" id="divConsulta" style="display: none;">
+                        <label class="form-label">Consulta asociada (opcional)</label>
+                        <select name="id_consulta" id="selectConsulta" class="form-select">
+                            <option value="">Sin consulta asociada</option>
+                        </select>
+                        <small class="text-muted">Vincular a una consulta existente</small>
+                    </div>
+
+                    <!-- IGV -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" name="aplicar_igv" id="aplicarIgv"
+                                   class="form-check-input" checked>
+                            <label class="form-check-label" for="aplicarIgv">
+                                Aplicar IGV (18%)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-4">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="2"
+                                  placeholder="Notas adicionales..."></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Despues de crear la factura, podra agregar los servicios/items.
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('facturacion.index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i> Crear Factura
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('selectPropietario').addEventListener('change', function() {
+    const idPropietario = this.value;
+    const selectMascota = document.getElementById('selectMascota');
+    const selectConsulta = document.getElementById('selectConsulta');
+    const divConsulta = document.getElementById('divConsulta');
+
+    // Limpiar selects
+    selectMascota.innerHTML = '<option value="">Cargando...</option>';
+    selectConsulta.innerHTML = '<option value="">Sin consulta asociada</option>';
+    divConsulta.style.display = 'none';
+
+    if (!idPropietario) {
+        selectMascota.innerHTML = '<option value="">Seleccione primero un cliente...</option>';
+        return;
+    }
+
+    // Cargar mascotas
+    fetch(`{{ url_for('facturacion.api_mascotas_propietario', id_propietario=0) }}`.replace('/0', '/' + idPropietario))
+        .then(response => response.json())
+        .then(mascotas => {
+            selectMascota.innerHTML = '<option value="">Sin mascota especifica</option>';
+            mascotas.forEach(m => {
+                selectMascota.innerHTML += `<option value="${m.id}">${m.nombre} (${m.especie || 'N/A'})</option>`;
+            });
+        });
+});
+
+document.getElementById('selectMascota').addEventListener('change', function() {
+    const idMascota = this.value;
+    const selectConsulta = document.getElementById('selectConsulta');
+    const divConsulta = document.getElementById('divConsulta');
+
+    if (!idMascota) {
+        divConsulta.style.display = 'none';
+        return;
+    }
+
+    // Cargar consultas sin facturar
+    fetch(`{{ url_for('facturacion.api_consultas_mascota', id_mascota=0) }}`.replace('/0', '/' + idMascota))
+        .then(response => response.json())
+        .then(consultas => {
+            selectConsulta.innerHTML = '<option value="">Sin consulta asociada</option>';
+            if (consultas.length > 0) {
+                divConsulta.style.display = 'block';
+                consultas.forEach(c => {
+                    selectConsulta.innerHTML += `<option value="${c.id}">${c.fecha} - ${c.motivo} (S/ ${c.costo.toFixed(2)})</option>`;
+                });
+            }
+        });
+});
+</script>
+{% endblock %}

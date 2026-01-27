@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Pagar Factura {{ factura.numero_factura }} - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-cash me-2"></i>Registrar Pago</h5>
+            </div>
+            <div class="card-body p-4">
+                <!-- Info de la factura -->
+                <div class="bg-light rounded p-3 mb-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Factura</small>
+                            <strong>{{ factura.numero_factura }}</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small class="text-muted d-block">Estado</small>
+                            <span class="badge bg-{{ factura.estado_color }}">{{ factura.estado }}</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Cliente</small>
+                            <strong>{{ factura.propietario.nombre if factura.propietario else 'N/A' }}</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <small class="text-muted d-block">Fecha</small>
+                            <strong>{{ factura.fecha_formateada }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen de montos -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total de la factura:</span>
+                        <span class="fw-bold">S/ {{ "%.2f"|format(factura.total or 0) }}</span>
+                    </div>
+                    {% if factura.monto_pagado and factura.monto_pagado > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Ya pagado:</span>
+                        <span>S/ {{ "%.2f"|format(factura.monto_pagado) }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between mb-2 text-danger fw-bold fs-5">
+                        <span>Saldo pendiente:</span>
+                        <span>S/ {{ "%.2f"|format(factura.saldo_pendiente) }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Formulario de pago -->
+                <form method="POST" action="{{ url_for('facturacion.pagar', id=factura.id_factura) }}">
+                    <div class="mb-4">
+                        <label class="form-label">Monto a pagar *</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">S/</span>
+                            <input type="number" name="monto" class="form-control" required
+                                   step="0.01" min="0.01"
+                                   max="{{ factura.saldo_pendiente }}"
+                                   value="{{ "%.2f"|format(factura.saldo_pendiente) }}"
+                                   autofocus>
+                        </div>
+                        <small class="text-muted">Maximo: S/ {{ "%.2f"|format(factura.saldo_pendiente) }}</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Metodo de pago *</label>
+                        <div class="row g-2">
+                            {% for metodo in metodos_pago %}
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="metodo_pago"
+                                       id="metodo_{{ loop.index }}" value="{{ metodo }}"
+                                       {% if loop.first %}checked{% endif %}>
+                                <label class="btn btn-outline-primary w-100" for="metodo_{{ loop.index }}">
+                                    {% if metodo == 'Efectivo' %}
+                                    <i class="bi bi-cash-coin me-1"></i>
+                                    {% elif metodo == 'Tarjeta' %}
+                                    <i class="bi bi-credit-card me-1"></i>
+                                    {% elif metodo == 'Transferencia' %}
+                                    <i class="bi bi-bank me-1"></i>
+                                    {% elif metodo == 'Yape/Plin' %}
+                                    <i class="bi bi-phone me-1"></i>
+                                    {% else %}
+                                    <i class="bi bi-wallet me-1"></i>
+                                    {% endif %}
+                                    {{ metodo }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('facturacion.show', id=factura.id_factura) }}"
+                           class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle me-1"></i> Confirmar Pago
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Botones rapidos -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <small class="text-muted d-block mb-2">Pago rapido:</small>
+                <div class="btn-group w-100">
+                    <button type="button" class="btn btn-outline-secondary"
+                            onclick="document.querySelector('input[name=monto]').value = {{ "%.2f"|format(factura.saldo_pendiente) }}">
+                        Total
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            onclick="document.querySelector('input[name=monto]').value = {{ "%.2f"|format(factura.saldo_pendiente / 2) }}">
+                        50%
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            onclick="document.querySelector('input[name=monto]').value = 50">
+                        S/ 50
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            onclick="document.querySelector('input[name=monto]').value = 100">
+                        S/ 100
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

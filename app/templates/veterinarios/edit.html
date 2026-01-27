@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Veterinario - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Editar Veterinario</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('veterinarios.edit', id=veterinario.id_veterinario) }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre Completo *</label>
+                            <input type="text" name="nombre" class="form-control" required
+                                   value="{{ veterinario.nombre }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Numero de Colegiatura *</label>
+                            <input type="text" name="colegiatura" class="form-control" required
+                                   value="{{ veterinario.colegiatura }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Especialidad</label>
+                            <input type="text" name="especialidad" class="form-control"
+                                   value="{{ veterinario.especialidad or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Telefono</label>
+                            <input type="tel" name="telefono" class="form-control"
+                                   value="{{ veterinario.telefono or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ veterinario.email or '' }}">
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('veterinarios.show', id=veterinario.id_veterinario) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i> Actualizar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

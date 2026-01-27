@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Facturacion - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-receipt me-2"></i>Facturacion</h2>
+    <a href="{{ url_for('facturacion.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nueva Factura
+    </a>
+</div>
+
+<!-- Estadisticas rapidas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-warning text-dark">
+            <div class="card-body text-center">
+                <h4 class="mb-0">{{ stats.num_pendientes }}</h4>
+                <small>Pendientes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body text-center">
+                <h4 class="mb-0">{{ stats.num_pagadas }}</h4>
+                <small>Pagadas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-danger text-white">
+            <div class="card-body text-center">
+                <h4 class="mb-0">S/ {{ "%.2f"|format(stats.total_pendiente) }}</h4>
+                <small>Por Cobrar</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm bg-info text-white">
+            <div class="card-body text-center">
+                <h4 class="mb-0">S/ {{ "%.2f"|format(stats.total_pagado) }}</h4>
+                <small>Recaudado</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" class="form-control"
+                           placeholder="N factura, cliente..."
+                           value="{{ busqueda }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <select name="estado" class="form-select">
+                    <option value="">Todos los estados</option>
+                    {% for est in estados %}
+                    <option value="{{ est }}" {% if estado_filtro == est %}selected{% endif %}>
+                        {{ est }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="fecha_desde" class="form-control"
+                       value="{{ fecha_desde }}" placeholder="Desde">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="fecha_hasta" class="form-control"
+                       value="{{ fecha_hasta }}" placeholder="Hasta">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+                <a href="{{ url_for('facturacion.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de facturas -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        {% if facturas %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>N Factura</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in facturas %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('facturacion.show', id=f.id_factura) }}"
+                               class="fw-bold text-decoration-none">
+                                {{ f.numero_factura }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ f.propietario.nombre if f.propietario else 'N/A' }}
+                            {% if f.mascota %}
+                            <br><small class="text-muted">
+                                <i class="bi bi-heart-fill me-1"></i>{{ f.mascota.nombre }}
+                            </small>
+                            {% endif %}
+                        </td>
+                        <td>{{ f.fecha_formateada }}</td>
+                        <td class="text-end">
+                            <strong>S/ {{ "%.2f"|format(f.total or 0) }}</strong>
+                            {% if f.saldo_pendiente > 0 and f.estado != 'Anulada' %}
+                            <br><small class="text-danger">Debe: S/ {{ "%.2f"|format(f.saldo_pendiente) }}</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-{{ f.estado_color }}">{{ f.estado }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('facturacion.show', id=f.id_factura) }}"
+                                   class="btn btn-outline-primary" title="Ver">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                {% if f.estado not in ['Pagada', 'Anulada'] %}
+                                <a href="{{ url_for('facturacion.edit', id=f.id_factura) }}"
+                                   class="btn btn-outline-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{{ url_for('facturacion.pagar', id=f.id_factura) }}"
+                                   class="btn btn-outline-success" title="Pagar">
+                                    <i class="bi bi-cash"></i>
+                                </a>
+                                {% endif %}
+                                <a href="{{ url_for('facturacion.imprimir', id=f.id_factura) }}"
+                                   class="btn btn-outline-secondary" title="Imprimir" target="_blank">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3 text-muted">
+            <small>{{ facturas|length }} factura(s) encontrada(s)</small>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
+            <h5 class="mt-3 text-muted">No se encontraron facturas</h5>
+            {% if busqueda or estado_filtro or fecha_desde or fecha_hasta %}
+            <p class="text-muted">No hay resultados para los filtros aplicados</p>
+            <a href="{{ url_for('facturacion.index') }}" class="btn btn-outline-secondary">
+                Ver todas
+            </a>
+            {% else %}
+            <p class="text-muted">Comienza creando la primera factura</p>
+            <a href="{{ url_for('facturacion.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Nueva Factura
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

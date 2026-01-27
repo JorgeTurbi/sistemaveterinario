@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Atender Consulta - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header con info del paciente -->
+        <div class="card border-0 shadow-sm mb-4 bg-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="mb-1">
+                            <i class="bi bi-clipboard-pulse me-2"></i>
+                            Atendiendo Consulta #{{ consulta.id_consulta }}
+                        </h4>
+                        {% if consulta.mascota %}
+                        <p class="mb-0">
+                            <strong>{{ consulta.mascota.nombre }}</strong>
+                            ({{ consulta.mascota.especie.nombre if consulta.mascota.especie else 'N/A' }})
+                            -
+                            Propietario: {{ consulta.mascota.propietario.nombre if consulta.mascota.propietario else 'N/A' }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <p class="mb-0"><i class="bi bi-calendar me-1"></i>{{ consulta.fecha_formateada }}</p>
+                        <p class="mb-0"><i class="bi bi-person-badge me-1"></i>Dr. {{ consulta.veterinario.nombre if consulta.veterinario else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivo de consulta -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>Motivo de Consulta</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ consulta.motivo }}</p>
+            </div>
+        </div>
+
+        <!-- Formulario de atencion -->
+        <form method="POST" action="{{ url_for('consultas.atender', id=consulta.id_consulta) }}">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-activity me-2"></i>Signos Vitales</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Peso Actual (kg)</label>
+                            <div class="input-group">
+                                <input type="number" name="peso_actual" class="form-control"
+                                       step="0.01" min="0"
+                                       value="{{ consulta.peso_actual or (consulta.mascota.peso if consulta.mascota else '') }}"
+                                       placeholder="Ej: 5.5">
+                                <span class="input-group-text">kg</span>
+                            </div>
+                            {% if consulta.mascota and consulta.mascota.peso %}
+                            <small class="text-muted">Ultimo peso registrado: {{ consulta.mascota.peso }} kg</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Temperatura (C)</label>
+                            <div class="input-group">
+                                <input type="number" name="temperatura" class="form-control"
+                                       step="0.1" min="30" max="45"
+                                       value="{{ consulta.temperatura or '' }}"
+                                       placeholder="Ej: 38.5">
+                                <span class="input-group-text">C</span>
+                            </div>
+                            <small class="text-muted">Normal: 38.0 - 39.2 C</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Costo de Consulta (S/)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">S/</span>
+                                <input type="number" name="costo" class="form-control"
+                                       step="0.01" min="0"
+                                       value="{{ consulta.costo or '50.00' }}"
+                                       placeholder="50.00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-file-medical me-2"></i>Diagnostico y Observaciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Diagnostico</label>
+                        <textarea name="diagnostico" class="form-control" rows="4"
+                                  placeholder="Ingrese el diagnostico medico...">{{ consulta.diagnostico or '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="3"
+                                  placeholder="Observaciones adicionales...">{{ consulta.observaciones or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-flag me-2"></i>Estado de la Consulta</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for est in estados %}
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input type="radio" name="estado" value="{{ est }}"
+                                       id="estado_{{ loop.index }}" class="form-check-input"
+                                       {% if consulta.estado == est or (loop.index == 3 and consulta.estado == 'Programada') %}checked{% endif %}>
+                                <label class="form-check-label" for="estado_{{ loop.index }}">
+                                    {{ est }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('consultas.show', id=consulta.id_consulta) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Cancelar
+                </a>
+                <div>
+                    <button type="submit" name="guardar" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

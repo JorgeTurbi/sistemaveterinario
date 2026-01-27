@@ -14,6 +14,8 @@ from app.models.tratamiento import Tratamiento
 from app.models.vacuna import Vacuna
 from app.models.calendario_vacunacion import CalendarioVacunacion
 from app.models.usuario import Usuario
+from app.models.servicio import Servicio
+from app.models.factura import Factura, DetalleFactura
 
 # Exportar todos los modelos
 __all__ = [
@@ -26,5 +28,8 @@ __all__ = [
     'Tratamiento',
     'Vacuna',
     'CalendarioVacunacion',
-    'Usuario'
+    'Usuario',
+    'Servicio',
+    'Factura',
+    'DetalleFactura'
 ]

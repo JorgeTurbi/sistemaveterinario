@@ -16,35 +16,35 @@ class Config:
     # ============================================
     # Modifica estos valores según tu instalación
     
-    SQL_SERVER = os.environ.get('SQL_SERVER') or 'localhost'  # o 'localhost\\SQLEXPRESS'
-    SQL_DATABASE = os.environ.get('SQL_DATABASE') or 'VetCareDB'
+    SQL_SERVER = os.environ.get('SQL_SERVER') or 'dev001'  # o 'localhost\\SQLEXPRESS'
+    SQL_DATABASE = os.environ.get('SQL_DATABASE') or 'PetCareDB'
     SQL_DRIVER = 'ODBC Driver 17 for SQL Server'  # o 'ODBC Driver 18 for SQL Server'
     
     # ============================================
     # OPCIÓN 1: Windows Authentication (Recomendado)
     # ============================================
-    params = quote_plus(
-        f'DRIVER={{{SQL_DRIVER}}};'
-        f'SERVER={SQL_SERVER};'
-        f'DATABASE={SQL_DATABASE};'
-        f'Trusted_Connection=yes;'
-        f'TrustServerCertificate=yes;'
-    )
+    # params = quote_plus(
+    #     f'DRIVER={{{SQL_DRIVER}}};'
+    #     f'SERVER={SQL_SERVER};'
+    #     f'DATABASE={SQL_DATABASE};'
+    #     f'Trusted_Connection=yes;'
+    #     f'TrustServerCertificate=yes;'
+    # )
     
     # ============================================
     # OPCIÓN 2: SQL Server Authentication
     # Descomenta las siguientes líneas si usas usuario y contraseña
     # ============================================
-    # SQL_USERNAME = 'tu_usuario'
-    # SQL_PASSWORD = 'tu_contraseña'
-    # params = quote_plus(
-    #     f'DRIVER={{{SQL_DRIVER}}};'
-    #     f'SERVER={SQL_SERVER};'
-    #     f'DATABASE={SQL_DATABASE};'
-    #     f'UID={SQL_USERNAME};'
-    #     f'PWD={SQL_PASSWORD};'
-    #     f'TrustServerCertificate=yes;'
-    # )
+    SQL_USERNAME = 'sa'
+    SQL_PASSWORD = 'Brittany040238.'
+    params = quote_plus(
+        f'DRIVER={{{SQL_DRIVER}}};'
+        f'SERVER={SQL_SERVER};'
+        f'DATABASE={SQL_DATABASE};'
+        f'UID={SQL_USERNAME};'
+        f'PWD={SQL_PASSWORD};'
+        f'TrustServerCertificate=yes;'
+    )
     
     # Cadena de conexión final para SQLAlchemy
     SQLALCHEMY_DATABASE_URI = f'mssql+pyodbc:///?odbc_connect={params}'

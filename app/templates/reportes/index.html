@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-graph-up me-2"></i>Reportes y Estadisticas</h2>
+    <p class="text-muted">Seleccione un reporte para ver informacion detallada</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-check text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Consultas por Periodo</h5>
+                <p class="text-muted">Total de consultas, ingresos y estadisticas por fecha</p>
+                <a href="{{ url_for('reportes.consultas_periodo') }}" class="btn btn-primary">
+                    Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-pie-chart text-success" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Especies Atendidas</h5>
+                <p class="text-muted">Distribucion de consultas por tipo de mascota</p>
+                <a href="{{ url_for('reportes.especies_atendidas') }}" class="btn btn-success">
+                    Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-capsule text-info" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Tratamientos Frecuentes</h5>
+                <p class="text-muted">Tratamientos y medicamentos mas utilizados</p>
+                <a href="{{ url_for('reportes.tratamientos_frecuentes') }}" class="btn btn-info">
+                    Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge text-warning" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Productividad Veterinarios</h5>
+                <p class="text-muted">Consultas e ingresos por veterinario</p>
+                <a href="{{ url_for('reportes.productividad_veterinarios') }}" class="btn btn-warning">
+                    Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-shield-plus text-danger" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Vacunacion</h5>
+                <p class="text-muted">Vacunas aplicadas, pendientes y vencidas</p>
+                <a href="{{ url_for('reportes.vacunacion') }}" class="btn btn-danger">
+                    Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

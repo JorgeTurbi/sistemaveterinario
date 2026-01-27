@@ -75,7 +75,24 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-gear me-1"></i> Catálogos
+                            <i class="bi bi-cash-coin me-1"></i> Facturacion
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('facturacion.index') }}">
+                                <i class="bi bi-receipt me-2"></i>Facturas
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('facturacion.create') }}">
+                                <i class="bi bi-plus-circle me-2"></i>Nueva Factura
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('servicios.index') }}">
+                                <i class="bi bi-tags me-2"></i>Servicios y Precios
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-gear me-1"></i> Catalogos
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ url_for('especies.index') }}">
@@ -86,6 +103,10 @@
                             </a></li>
                             <li><a class="dropdown-item" href="{{ url_for('vacunacion.vacunas') }}">
                                 <i class="bi bi-droplet me-2"></i>Vacunas
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('servicios.index') }}">
+                                <i class="bi bi-tags me-2"></i>Servicios
                             </a></li>
                         </ul>
                     </li>
