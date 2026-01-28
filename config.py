@@ -16,7 +16,7 @@ class Config:
     # ============================================
     # Modifica estos valores según tu instalación
     
-    SQL_SERVER = os.environ.get('SQL_SERVER') or 'Nombre Servidor Base de datos'  # o 'localhost\\SQLEXPRESS'
+    SQL_SERVER = os.environ.get('SQL_SERVER') or 'Nombre servidor o base de datos'  # o 'localhost\\SQLEXPRESS'
     SQL_DATABASE = os.environ.get('SQL_DATABASE') or 'VetCareDB'
     SQL_DRIVER = 'ODBC Driver 17 for SQL Server'  # o 'ODBC Driver 18 for SQL Server'
     
@@ -35,8 +35,8 @@ class Config:
     # OPCIÓN 2: SQL Server Authentication
     # Descomenta las siguientes líneas si usas usuario y contraseña
     # ============================================
-    SQL_USERNAME = 'Usuario Base de Datos'
-    SQL_PASSWORD = 'Clave Usuario Base de Datos'
+    SQL_USERNAME = 'Usuario Sql Server'
+    SQL_PASSWORD = 'Clave Base de datos'
     params = quote_plus(
         f'DRIVER={{{SQL_DRIVER}}};'
         f'SERVER={SQL_SERVER};'

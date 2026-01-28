@@ -156,37 +156,54 @@ def productividad_veterinarios():
     """Reporte de productividad por veterinario"""
     fecha_inicio = request.args.get('fecha_inicio', '')
     fecha_fin = request.args.get('fecha_fin', '')
-    
+    estado_filtro = request.args.get('estado', '')
+
     # Por defecto, último mes
     if not fecha_inicio:
         fecha_inicio = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
     if not fecha_fin:
         fecha_fin = date.today().strftime('%Y-%m-%d')
-    
+
     try:
         f_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
         f_fin = datetime.strptime(fecha_fin, '%Y-%m-%d') + timedelta(days=1)
     except ValueError:
         f_inicio = datetime.now() - timedelta(days=30)
         f_fin = datetime.now()
-    
-    # Consultas por veterinario
-    resultado = db.session.query(
+
+    # Construir la consulta base
+    query = db.session.query(
         Veterinario.nombre,
         func.count(Consulta.id_consulta).label('total_consultas'),
         func.sum(Consulta.costo).label('total_ingresos')
     ).join(Consulta, Consulta.id_veterinario == Veterinario.id_veterinario)\
      .filter(
         Consulta.fecha_hora >= f_inicio,
-        Consulta.fecha_hora < f_fin,
-        Consulta.estado == 'Completada'
-    ).group_by(Veterinario.nombre)\
-     .order_by(func.count(Consulta.id_consulta).desc()).all()
-    
+        Consulta.fecha_hora < f_fin
+    )
+
+    # Aplicar filtro de estado solo si se especifica uno
+    if estado_filtro and estado_filtro != 'Todos':
+        query = query.filter(Consulta.estado == estado_filtro)
+
+    resultado = query.group_by(Veterinario.nombre)\
+        .order_by(func.count(Consulta.id_consulta).desc()).all()
+
+    # Obtener estados disponibles para el filtro
+    estados = Consulta.ESTADOS
+
+    # Calcular totales manejando valores NULL
+    total_consultas = sum(r[1] or 0 for r in resultado)
+    total_ingresos = sum(float(r[2] or 0) for r in resultado)
+
     return render_template('reportes/productividad_veterinarios.html',
                          resultado=resultado,
                          fecha_inicio=fecha_inicio,
-                         fecha_fin=fecha_fin)
+                         fecha_fin=fecha_fin,
+                         estado_filtro=estado_filtro,
+                         estados=estados,
+                         total_consultas=total_consultas,
+                         total_ingresos=total_ingresos)
 
 
 @reportes_bp.route('/vacunacion')

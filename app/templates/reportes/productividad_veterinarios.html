@@ -14,15 +14,24 @@
 <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
         <form method="GET" class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">Fecha Inicio</label>
                 <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">Fecha Fin</label>
                 <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
             </div>
-            <div class="col-md-4 d-flex align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Estado de Consulta</label>
+                <select name="estado" class="form-select">
+                    <option value="Todos" {% if not estado_filtro or estado_filtro == 'Todos' %}selected{% endif %}>Todos los estados</option>
+                    {% for estado in estados %}
+                    <option value="{{ estado }}" {% if estado_filtro == estado %}selected{% endif %}>{{ estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-funnel me-1"></i> Filtrar
                 </button>
@@ -69,10 +78,10 @@
                     <tr>
                         <td colspan="2"><strong>Total</strong></td>
                         <td class="text-center">
-                            <strong>{{ resultado|sum(attribute=1) }}</strong>
+                            <strong>{{ total_consultas }}</strong>
                         </td>
                         <td class="text-end">
-                            <strong>S/ {{ "%.2f"|format(resultado|sum(attribute=2)) }}</strong>
+                            <strong>S/ {{ "%.2f"|format(total_ingresos) }}</strong>
                         </td>
                     </tr>
                 </tfoot>
