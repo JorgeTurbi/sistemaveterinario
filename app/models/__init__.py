@@ -1,7 +1,4 @@
-"""
-VetCare Pro - Modelos de Base de Datos
-Este archivo exporta todos los modelos SQLAlchemy
-"""
+
 from app import db
 
 # Importar todos los modelos

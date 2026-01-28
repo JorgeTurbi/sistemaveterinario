@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Usuario - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-0"><i class="bi bi-person-plus me-2"></i>Nuevo Usuario</h2>
+                <small class="text-muted">Crear cuenta de acceso al sistema</small>
+            </div>
+            <a href="{{ url_for('usuarios.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('usuarios.create') }}">
+                    <!-- Datos de acceso -->
+                    <h6 class="text-muted mb-3"><i class="bi bi-key me-2"></i>Datos de Acceso</h6>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre de Usuario <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-at"></i></span>
+                                <input type="text" name="username" class="form-control"
+                                       placeholder="usuario" required minlength="3"
+                                       pattern="[a-zA-Z0-9_]+" title="Solo letras, numeros y guion bajo">
+                            </div>
+                            <small class="text-muted">Minimo 3 caracteres, sin espacios</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" name="email" class="form-control"
+                                       placeholder="correo@ejemplo.com" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Contrasena <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" name="password" class="form-control"
+                                       placeholder="Minimo 6 caracteres" required minlength="6" id="password">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Confirmar Contrasena <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" name="confirm_password" class="form-control"
+                                       placeholder="Repita la contrasena" required minlength="6" id="confirm_password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Datos personales -->
+                    <h6 class="text-muted mb-3"><i class="bi bi-person me-2"></i>Datos Personales</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                        <input type="text" name="nombre_completo" class="form-control"
+                               placeholder="Nombre y apellidos" required>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Rol <span class="text-danger">*</span></label>
+                            <select name="rol" class="form-select" id="rol_select">
+                                {% for r in roles %}
+                                <option value="{{ r }}" {% if r == 'Recepcionista' %}selected{% endif %}>{{ r }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado</label>
+                            <div class="form-check form-switch mt-2">
+                                <input type="checkbox" name="activo" class="form-check-input"
+                                       id="activo" checked>
+                                <label class="form-check-label" for="activo">Usuario Activo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vincular veterinario -->
+                    <div id="vincular_veterinario_section" style="display: none;">
+                        <hr class="my-4">
+                        <h6 class="text-muted mb-3"><i class="bi bi-link-45deg me-2"></i>Vincular con Veterinario</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ficha de Veterinario</label>
+                            <select name="vincular_veterinario" class="form-select">
+                                <option value="">-- Sin vincular --</option>
+                                {% for vet in veterinarios_disponibles %}
+                                <option value="{{ vet.id_veterinario }}">{{ vet.nombre }} - {{ vet.especialidad or 'General' }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Asociar este usuario con una ficha de veterinario existente</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> Crear Usuario
+                        </button>
+                        <a href="{{ url_for('usuarios.index') }}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Ayuda -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h6 class="text-muted"><i class="bi bi-lightbulb me-2"></i>Consejos</h6>
+                <ul class="small text-muted mb-0">
+                    <li>El nombre de usuario debe ser unico y se usara para iniciar sesion</li>
+                    <li>La contrasena debe tener al menos 6 caracteres</li>
+                    <li>Si el rol es "Veterinario", puede vincular con una ficha de veterinario existente</li>
+                    <li>Los usuarios inactivos no pueden iniciar sesion</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rolSelect = document.getElementById('rol_select');
+    const vincularSection = document.getElementById('vincular_veterinario_section');
+
+    function toggleVincular() {
+        if (rolSelect.value === 'Veterinario') {
+            vincularSection.style.display = 'block';
+        } else {
+            vincularSection.style.display = 'none';
+        }
+    }
+
+    rolSelect.addEventListener('change', toggleVincular);
+    toggleVincular();
+
+    // Validar contrasenas
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    function validatePassword() {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Las contrasenas no coinciden');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+
+    password.addEventListener('change', validatePassword);
+    confirmPassword.addEventListener('keyup', validatePassword);
+});
+</script>
+{% endblock %}

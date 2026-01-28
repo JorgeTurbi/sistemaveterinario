@@ -125,7 +125,7 @@
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h6 class="mb-0"><i class="bi bi-capsule me-2"></i>Tratamientos</h6>
-                <a href="{{ url_for('tratamientos.create', consulta=consulta.id_consulta) }}" class="btn btn-sm btn-outline-primary">
+                <a href="{{ url_for('tratamientos.create', consulta_id=consulta.id_consulta) }}" class="btn btn-sm btn-outline-primary">
                     <i class="bi bi-plus"></i> Agregar
                 </a>
             </div>
@@ -193,7 +193,7 @@
                     {% endif %}
                     {% endif %}
 
-                    <a href="{{ url_for('tratamientos.create', consulta=consulta.id_consulta) }}" class="btn btn-outline-primary">
+                    <a href="{{ url_for('tratamientos.create', consulta_id=consulta.id_consulta) }}" class="btn btn-outline-primary">
                         <i class="bi bi-capsule me-1"></i> Agregar Tratamiento
                     </a>
 

@@ -57,7 +57,7 @@
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Peso</span>
-                        <strong>{{ mascota.peso }} kg</strong> {% if mascota.peso else %}<span class="text-muted">No registrado</span>{% endif %}
+                        {% if mascota.peso %}<strong>{{ mascota.peso }} kg</strong>{% else %}<span class="text-muted">No registrado</span>{% endif %}
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Color</span>

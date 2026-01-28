@@ -11,6 +11,7 @@ from app.models.especie import Especie
 from app.models.tratamiento import Tratamiento
 from app.models.veterinario import Veterinario
 from app.models.calendario_vacunacion import CalendarioVacunacion
+from app.models.vacuna import Vacuna
 from datetime import datetime, date, timedelta
 from sqlalchemy import func
 

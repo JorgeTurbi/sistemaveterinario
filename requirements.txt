@@ -1,7 +1,8 @@
-# ============================================
+
 # VetCare Pro - Dependencias del Proyecto
-# ============================================
+
 # Instalar con: pip install -r requirements.txt
+# en caso de falla realizarlo de forma manual
 
 # Framework Web
 flask==3.0.0

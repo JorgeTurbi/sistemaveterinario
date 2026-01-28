@@ -9,15 +9,15 @@ class Config:
     """Configuración base de la aplicación"""
     
     # Clave secreta para sesiones y CSRF
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'vetcare-clave-secreta-desarrollo-2024'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'vetcare-clave-secreta-desarrollo-2025'
     
     # ============================================
     # CONFIGURACIÓN DE SQL SERVER
     # ============================================
     # Modifica estos valores según tu instalación
     
-    SQL_SERVER = os.environ.get('SQL_SERVER') or 'dev001'  # o 'localhost\\SQLEXPRESS'
-    SQL_DATABASE = os.environ.get('SQL_DATABASE') or 'PetCareDB'
+    SQL_SERVER = os.environ.get('SQL_SERVER') or 'Nombre Servidor Base de datos'  # o 'localhost\\SQLEXPRESS'
+    SQL_DATABASE = os.environ.get('SQL_DATABASE') or 'VetCareDB'
     SQL_DRIVER = 'ODBC Driver 17 for SQL Server'  # o 'ODBC Driver 18 for SQL Server'
     
     # ============================================
@@ -35,8 +35,8 @@ class Config:
     # OPCIÓN 2: SQL Server Authentication
     # Descomenta las siguientes líneas si usas usuario y contraseña
     # ============================================
-    SQL_USERNAME = 'sa'
-    SQL_PASSWORD = 'Brittany040238.'
+    SQL_USERNAME = 'Usuario Base de Datos'
+    SQL_PASSWORD = 'Clave Usuario Base de Datos'
     params = quote_plus(
         f'DRIVER={{{SQL_DRIVER}}};'
         f'SERVER={SQL_SERVER};'

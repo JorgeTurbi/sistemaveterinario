@@ -43,6 +43,7 @@ def create_app(config_name='default'):
     from app.controllers.reportes_controller import reportes_bp
     from app.controllers.servicio_controller import servicio_bp
     from app.controllers.facturacion_controller import facturacion_bp
+    from app.controllers.usuario_controller import usuario_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -56,7 +57,8 @@ def create_app(config_name='default'):
     app.register_blueprint(reportes_bp, url_prefix='/reportes')
     app.register_blueprint(servicio_bp, url_prefix='/servicios')
     app.register_blueprint(facturacion_bp, url_prefix='/facturacion')
-    
+    app.register_blueprint(usuario_bp, url_prefix='/usuarios')
+
     # ============================================
     # CONTEXT PROCESSORS (Variables globales para templates)
     # ============================================

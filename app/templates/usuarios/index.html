@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion de Usuarios - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0"><i class="bi bi-people-fill me-2"></i>Gestion de Usuarios</h2>
+        <small class="text-muted">Administracion de cuentas del sistema</small>
+    </div>
+    <a href="{{ url_for('usuarios.create') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus me-1"></i> Nuevo Usuario
+    </a>
+</div>
+
+<!-- Estadisticas -->
+<div class="row mb-4">
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-6 text-primary fw-bold">{{ total_usuarios }}</div>
+                <small class="text-muted">Total Usuarios</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-6 text-danger fw-bold">{{ admins }}</div>
+                <small class="text-muted">Administradores</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-6 text-success fw-bold">{{ veterinarios }}</div>
+                <small class="text-muted">Veterinarios</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-6 text-info fw-bold">{{ recepcionistas }}</div>
+                <small class="text-muted">Recepcionistas</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Buscar</label>
+                <input type="text" name="buscar" class="form-control"
+                       placeholder="Nombre, usuario o email..." value="{{ buscar }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Rol</label>
+                <select name="rol" class="form-select">
+                    <option value="">Todos los roles</option>
+                    <option value="Administrador" {% if rol_filtro == 'Administrador' %}selected{% endif %}>Administrador</option>
+                    <option value="Veterinario" {% if rol_filtro == 'Veterinario' %}selected{% endif %}>Veterinario</option>
+                    <option value="Recepcionista" {% if rol_filtro == 'Recepcionista' %}selected{% endif %}>Recepcionista</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Estado</label>
+                <select name="estado" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="activo" {% if estado_filtro == 'activo' %}selected{% endif %}>Activos</option>
+                    <option value="inactivo" {% if estado_filtro == 'inactivo' %}selected{% endif %}>Inactivos</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search me-1"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de usuarios -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        {% if usuarios %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre Completo</th>
+                        <th>Email</th>
+                        <th class="text-center">Rol</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Ultimo Acceso</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr class="{{ 'table-secondary' if not usuario.activo else '' }}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-{{ usuario.rol_color }} bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-person-fill text-{{ usuario.rol_color }}"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ usuario.username }}</strong>
+                                    {% if usuario.id_usuario == current_user.id_usuario %}
+                                    <span class="badge bg-info ms-1">Tu</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ usuario.nombre_completo }}</td>
+                        <td><small>{{ usuario.email }}</small></td>
+                        <td class="text-center">
+                            <span class="badge bg-{{ usuario.rol_color }}">{{ usuario.rol }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if usuario.activo %}
+                            <span class="badge bg-success">Activo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if usuario.ultimo_acceso %}
+                            <small class="text-muted">{{ usuario.ultimo_acceso.strftime('%d/%m/%Y %H:%M') }}</small>
+                            {% else %}
+                            <small class="text-muted">Nunca</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('usuarios.show', id=usuario.id_usuario) }}"
+                                   class="btn btn-outline-info" title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('usuarios.edit', id=usuario.id_usuario) }}"
+                                   class="btn btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                {% if usuario.id_usuario != current_user.id_usuario %}
+                                <form action="{{ url_for('usuarios.toggle_activo', id=usuario.id_usuario) }}"
+                                      method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-{{ 'warning' if usuario.activo else 'success' }}"
+                                            title="{{ 'Desactivar' if usuario.activo else 'Activar' }}"
+                                            onclick="return confirm('{{ 'Desactivar' if usuario.activo else 'Activar' }} este usuario?')">
+                                        <i class="bi bi-{{ 'pause' if usuario.activo else 'play' }}"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-people display-1 text-muted"></i>
+            <p class="text-muted mt-3">No se encontraron usuarios</p>
+            <a href="{{ url_for('usuarios.create') }}" class="btn btn-primary">
+                <i class="bi bi-person-plus me-1"></i> Crear Usuario
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Info de roles -->
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Permisos por Rol</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <h6><span class="badge bg-danger me-2">Administrador</span></h6>
+                <ul class="small text-muted">
+                    <li>Acceso total al sistema</li>
+                    <li>Gestion de usuarios</li>
+                    <li>Configuracion del sistema</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6><span class="badge bg-success me-2">Veterinario</span></h6>
+                <ul class="small text-muted">
+                    <li>Gestion de consultas</li>
+                    <li>Tratamientos y vacunacion</li>
+                    <li>Historial clinico</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6><span class="badge bg-primary me-2">Recepcionista</span></h6>
+                <ul class="small text-muted">
+                    <li>Registro de clientes</li>
+                    <li>Agendar citas</li>
+                    <li>Facturacion basica</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

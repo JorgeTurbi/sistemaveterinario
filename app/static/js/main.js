@@ -1,11 +1,4 @@
-/**
- * VetCare Pro - JavaScript Principal
- * Sistema de Gestión de Veterinaria
- */
 
-// ========================================
-// Configuración General
-// ========================================
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar tooltips de Bootstrap
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -29,9 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupLiveSearch();
 });
 
-// ========================================
-// Confirmación de Eliminación
-// ========================================
+
 function setupDeleteConfirmation() {
     var deleteButtons = document.querySelectorAll('[data-confirm]');
     deleteButtons.forEach(function(btn) {
@@ -45,9 +36,7 @@ function setupDeleteConfirmation() {
     });
 }
 
-// ========================================
-// Búsqueda en Tiempo Real (AJAX)
-// ========================================
+
 function setupLiveSearch() {
     var searchInputs = document.querySelectorAll('[data-live-search]');
     searchInputs.forEach(function(input) {
@@ -99,9 +88,7 @@ function updateSearchResults(targetId, data) {
     });
 }
 
-// ========================================
-// Cargar Mascotas por Propietario
-// ========================================
+
 function cargarMascotas(propietarioId, selectId) {
     var select = document.getElementById(selectId);
     if (!select) return;
@@ -127,9 +114,7 @@ function cargarMascotas(propietarioId, selectId) {
         });
 }
 
-// ========================================
-// Formateo de Fechas
-// ========================================
+
 function formatDate(dateString) {
     var date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -150,9 +135,7 @@ function formatDateTime(dateString) {
     });
 }
 
-// ========================================
-// Validación de Formularios
-// ========================================
+
 function validateForm(formId) {
     var form = document.getElementById(formId);
     if (!form) return true;
@@ -172,9 +155,7 @@ function validateForm(formId) {
     return isValid;
 }
 
-// ========================================
-// Utilidades
-// ========================================
+
 function showLoading(elementId) {
     var element = document.getElementById(elementId);
     if (element) {
